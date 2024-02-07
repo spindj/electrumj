@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 group 'org.electrumj'
@@ -18,7 +19,7 @@ repositories {
 dependencies {
     ext {
         logbackVersion = '1.1.11'
-        lombokVersion = '1.18.2'
+        lombokVersion = '1.18.20'
     }
 
     testImplementation 'junit:junit:4.12'
@@ -35,4 +36,36 @@ dependencies {
 
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'org.electrumj'
+            artifactId = 'electrumj'
+            version = '0.1.2'
+
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = "spindj"
+                password = "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"
+            }
+            name = "GitHub-SpinDJ-Apache-Maven-Packages"
+            url = uri("https://maven.pkg.github.com/spindj/electrumj")
+            allowInsecureProtocol = true
+        }
+//        maven {
+//            credentials {
+//                username = "trusted"
+//                password = "thePass25"
+//            }
+//
+//            url = "http://artifactory.ocommunity.net/artifactory/release"
+//            allowInsecureProtocol = true
+//        }
+    }
 }
