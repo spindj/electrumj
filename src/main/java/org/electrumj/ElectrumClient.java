@@ -7,9 +7,11 @@ import org.electrumj.dto.transactionget.BlockchainTransactionGetVerboseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
@@ -41,8 +43,8 @@ public class ElectrumClient {
     private int serverPort;
 
     // Socket connection to the server.
-    private SSLSocket socket;
-    // OutputStrem to write into to send data to the server.
+    private Socket socket;
+    // OutputStream to write into to send data to the server.
     private OutputStream socketOutputStream;
     // InputStream to read from to read data from the server.
     private InputStream socketInputStream;
@@ -93,11 +95,16 @@ public class ElectrumClient {
      * @throws NoSuchAlgorithmException
      * @throws IOException
      */
-    public void openConnection() throws GeneralSecurityException, IOException {
+    public void openConnection(boolean isSecure) throws GeneralSecurityException, IOException {
         assert !connectionOpened;
-        SSLSocketFactory factory = createTrustAllCertsSocketFactory();
-        socket = (SSLSocket)factory.createSocket(this.getServerHostnameOrIp(), this.getServerPort());
-        socket.startHandshake();
+        if (isSecure) {
+            SSLSocketFactory factory = createTrustAllCertsSocketFactory();
+            SSLSocket socket = (SSLSocket)factory.createSocket(this.getServerHostnameOrIp(), this.getServerPort());
+            socket.startHandshake();
+            this.socket = socket;
+        } else {
+            socket = SocketFactory.getDefault().createSocket(this.getServerHostnameOrIp(), this.getServerPort());
+        }
         socketOutputStream = new AppendNewLineOutputStream(socket.getOutputStream());
         socketInputStream = socket.getInputStream();
         SocketChannel channel = socket.getChannel();

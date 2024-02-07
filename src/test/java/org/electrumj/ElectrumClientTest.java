@@ -34,7 +34,7 @@ public class ElectrumClientTest {
 //        - Uncomment the following 2 lines and uncomment the previous 2 lines of code.
 //        bitcoinjNetowrkParameters = RegTestParams.get();
 //        server = new ElectrumClient(ElectrumServers.LOCALHOST_URL);
-        client.openConnection();
+        client.openConnection(true);
         // Send a "server.version" message to do the handshake.
         ServerVersionResponse serverVersionResponse = client.serverVersion();
         System.out.println("serverVersionResponse = " + serverVersionResponse);
